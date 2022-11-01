@@ -63,7 +63,6 @@ module Core
           document = add_ingest_metadata(document)
           @sink.ingest(document)
           incoming_ids << document['id']
-          @status[:indexed_document_count] += 1
         end
 
         ids_to_delete = existing_ids - incoming_ids.uniq
@@ -72,7 +71,6 @@ module Core
 
         ids_to_delete.each do |id|
           @sink.delete(id)
-          @status[:deleted_document_count] += 1
         end
 
         @sink.flush
@@ -85,6 +83,14 @@ module Core
         Utility::ExceptionTracking.log_exception(e)
         ElasticConnectorActions.update_connector_status(@connector_settings.id, Connectors::ConnectorStatus::ERROR, Utility::Logger.abbreviated_message(e.message))
       ensure
+        stats = @sink.ingestion_stats
+
+        Utility::Logger.debug("Sync stats are: #{stats}")
+
+        @status[:indexed_document_count] = stats[:indexed_document_count]
+        @status[:deleted_document_count] = stats[:deleted_document_count]
+        @status[:indexed_document_volume] = stats[:indexed_document_volume]
+
         Utility::Logger.info("Upserted #{@status[:indexed_document_count]} documents into #{@connector_settings.index_name}.")
         Utility::Logger.info("Deleted #{@status[:deleted_document_count]} documents into #{@connector_settings.index_name}.")
 
