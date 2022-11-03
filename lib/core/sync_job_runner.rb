@@ -28,6 +28,7 @@ module Core
       @status = {
         :indexed_document_count => 0,
         :deleted_document_count => 0,
+        :indexed_document_volume => 0,
         :error => nil
       }
     end
