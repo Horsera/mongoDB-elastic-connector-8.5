@@ -417,8 +417,7 @@ describe Core::ElasticConnectorActions do
           :doc => hash_including(
             :indexed_document_count,
             :indexed_document_volume,
-            :deleted_document_count,
-            :updated_at
+            :deleted_document_count
           )
         }
       )
@@ -458,7 +457,6 @@ describe Core::ElasticConnectorActions do
         :body => {
           :doc => hash_including(
             :completed_at,
-            :updated_at,
             :indexed_document_count,
             :indexed_document_volume,
             :deleted_document_count,
