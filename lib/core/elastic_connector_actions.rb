@@ -310,6 +310,10 @@ module Core
         end
       end
 
+      def document_count(index_name)
+        client.count(:index => index_name)['count']
+      end
+
       private
 
       def client
