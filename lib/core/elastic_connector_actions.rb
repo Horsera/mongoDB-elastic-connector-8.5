@@ -114,7 +114,8 @@ module Core
           :connector_id => connector_id,
           :status => Connectors::SyncStatus::IN_PROGRESS,
           :worker_hostname => Socket.gethostname,
-          :created_at => Time.now
+          :created_at => Time.now,
+          :last_seen => Time.now
         }
         job = client.index(:index => Utility::Constants::JOB_INDEX, :body => body)
 
@@ -134,7 +135,7 @@ module Core
 
       def update_sync(job_id, metadata)
         body = {
-          :doc => metadata
+          :doc => { :last_seen => Time.now }.merge(metadata)
         }
         client.update(:index => Utility::Constants::JOB_INDEX, :id => job_id, :body => body)
       end
@@ -154,6 +155,7 @@ module Core
           :doc => {
             :status => sync_status,
             :completed_at => Time.now,
+            :last_seen => Time.now,
             :error => error
           }.merge(metadata)
         }
